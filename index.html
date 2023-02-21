@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Frequency Analysis</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/css/variables.css" rel="stylesheet">
+  <link href="assets/css/main.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Script Files -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.plot.ly/plotly-2.18.0.min.js"></script>
+  <script src ="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script> 
+</head>
+
+<body>
+  <!-- Header -->
+  <header id="header" class="header" data-scrollto-offset="0">
+    <div class="container-fluid d-flex align-items-center justify-content-between">
+      <a href="index.html" class="logo d-flex align-items-center scrollto me-auto me-lg-0">
+        <h1>Data Grapher<span>.</span></h1>
+      </a>
+      <a class="btn-getstarted scrollto" href="index.html#main-title">Get Started</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="hero-animated" class="hero-animated d-flex align-items-center">
+    <div class="container d-flex flex-column justify-content-center align-items-center text-center position-relative" data-aos="zoom-out">
+      <img src="assets/img/hero1-bg.png" class="img-fluid animated">
+      <h2 id="main-title" class="mb-4">Welcome to <span>Data Grapher</span></h2>
+      <p class="mx-5 mb-4">Data Grapher allows you to import any CSV file and graph your data for easy analysis and visualization. Take advantage of the Plotly library to display different types of graphs adapted to your needs. Import your CSV file to get started, or download a sample CSV file to explore Data Grapher. </p>
+      
+      <div id="accordion" class="mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                  <div href="#collapse1" data-toggle="collapse" data-parent="#accordion">
+                      <i class="fas fa-arrow-circle-down fa-sm p-1"></i> See Conditions
+                  </div>
+                </h6>
+            </div>
+
+            <div id="collapse1" class="collapse">
+                <div class="card-body text-align-left">
+                  <ul>
+                    <li>> Works best for frequency data.</li>
+                    <li>> Works for data where the x-axis is a date.</li>
+                    <li>> Data values need to be on rows 1 and 2 of the CSV file.</li>
+                    <li>> Types of graphs available: scatter plots, bar graphs.</li>
+                    <li>> Types of data available: linear, cumulative, moving average, sum, average.</li>
+                    <li>> Use Data Grapher on desktop screens for optimal usage.</li>
+                  </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+     
+      <div class="d-flex">
+        <a href="index.html#main" class="btn-get-started scrollto m-2" onclick="openFile()">Import CSV File</a>
+        <input class="form-control-file" type="file" id="csvInput" accept=".csv" style="display: none;"/>
+        <a href="assets/frequencyData.csv" class="btn-get-started scrollto m-2" download>Download Sample Data</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Graph Section -->
+  <main id="main">
+    <section class="about">
+      <div class="container text-center" data-aos="fade-up">
+        <div class="section-header mb-4">
+          <h2>Here's your data</h2>
+        </div>
+        <!-- Graph Options -->
+        <div id="graphOptions">
+          <!-- Graph Type -->
+          <label for="graphType">Graph Type: </label>
+          <select name="graphType" id="graphType" onchange="getGraphType()" class="form-select">
+              <option value="bar">Bar graph</option>
+              <option value="scatter">Scatter plot</option>
+          </select>
+          <!-- Scatter Plot Type -->
+          <span id="scatterFilter" class="mx-4">
+            <label for="scatter">Type of Scatter Plot: </label>
+            <select name="scatter" id="scatter" onchange="getGraphType()" class="form-select">
+                <option value="markers">Markers</option>
+                <option value="lines">Lines</option>
+                <option value="markers+lines">Markers + Lines</option>
+            </select>
+          </span>
+        </div>
+
+        <!-- Data Options -->
+        <div class="m-4" class="form-group">
+          <label for="cumulType">Statistical Analysis Option:</label>
+          <select name="cumulType" id="cumulType" onchange="getCumulType()" class="form-select">
+              <option value="linear">Linear</option>
+              <option value="cumul">Cumulative</option>
+              <option value="dayOfWeek">Per weekday</option>
+          </select>
+
+          <!-- Cumulative Filter Options -->
+          <span id="freqFilter" class="mx-4">
+            <label for="freq">Cumulative Frequency:</label>
+            <select name="frequency" id="freq" onchange="getCumulData()" class="form-select">
+                <option value="year">Year</option>
+                <option value="month">Month</option>
+                <option value="week">Week</option>
+            </select>
+          </span>
+
+          <span id="typeFilter" class="mx-4">
+            <label for="filter">Linear Filtering Options:</label>
+            <select name="filter" id="filter" onchange="filterFunction()" class="form-select">
+                <option value="all">All data</option>
+                <option value="year">Per year</option>
+                <option value="monthAndYear">Per month and year</option>
+            </select>
+          </span>
+        </div>
+
+        <!-- Year and Month Filters -->
+        <span id="yearFilter" class="form-group">
+          <label for="year">Year:</label>
+          <select name="year" id="year" onchange="filterFunction()" class="form-select">
+              <option value="2022">2022</option>
+              <option value="2023">2023</option>
+          </select>
+        </span>
+        <span id="monthFilter" class="mx-4">
+          <label for="byMonth">Month:</label>
+          <select name="month" id="month" onchange="filterFunction()" class="form-select">
+              <option value="0">January</option>
+              <option value="1">February</option>
+              <option value="2">March</option>
+              <option value="3">April</option>
+              <option value="4">May</option>
+              <option value="5">June</option>
+              <option value="6">July</option>
+              <option value="7">August</option>
+              <option value="8">September</option>
+              <option value="9">October</option>
+              <option value="10">November</option>
+              <option value="11">December</option>
+          </select>
+        </span>
+
+        <!-- Per Day of Week Options -->
+        <div id="dateInput" class="form-group">
+            <span class="mx-4">
+              <label for="startDate">From (yyyy-mm-dd):</label>
+              <input type="text" id="startDate" name="startDate" class="form-control">
+            </span>
+            <span>
+              <label for="endDate">To (yyyy-mm-dd):</label>
+              <input type="text" id="endDate" name="endDate" class="form-control">
+            </span>
+            <a href="index.html#graph" class="btn-get-started scrollto m-2 px-3 py-2" onclick="cumulPerDayOfWeek()">Submit</a>
+        </div>
+
+        <!-- Moving Average -->
+        <div id="movingAvg" class="text-center mt-4">
+          <input class="form-check-input mx-2" type="checkbox" value="false" id="flexCheckDefault">
+          <label class="form-check-label" for="flexCheckDefault">
+            Show Moving Average
+          </label>
+        </div>
+
+        <!-- Plotly Graph -->
+        <div class="row align-items-center my-5">
+          <div class="col m-0 p-0" id="prevButton" style="display: none;" onclick="onPrev()"><img src="assets/img/arrow-left-1.png" width="25" height="25"></div>
+          <div id="graph" class="col-11" style="height: 90vh;"></div>
+          <div class="col m-0 p-0" id="nextButton" style="display: none;" onclick="onNext()"><img src="assets/img/arrow-right-1.png" width="25" height="25"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <!-- Template Main JS File -->
+  <script src="assets/js/main.js"></script>
+
+  <!-- JAVASCRIPT -->
+  <script>
+    $(document).on('click', '#flexCheckDefault', checkboxClicked);
+    let checkboxValue;
+
+    function checkboxClicked() {
+      if (document.getElementById("flexCheckDefault").value === 'false') {
+        document.getElementById("flexCheckDefault").value = 'true';
+      } else {
+        document.getElementById("flexCheckDefault").value = 'false';
+      }
+      checkboxValue = document.getElementById("flexCheckDefault").value;
+      getGraphType();
+    }
+
+    function openFile() {
+      document.getElementById("csvInput").click();
+    }
+
+    let keys, values, sum, avg;
+    let graphType, graphMode, cumulType, filterOption;
+    const formFile = document.querySelector('#csvInput');
+    formFile.addEventListener('change', getData, false);
+
+    function getData() {
+      let file = formFile.files[0];
+      let reader = new FileReader();
+      reader.readAsText(file);  
+
+      reader.onload = function (e) {
+          cleanedData = reader.result.trim().split("\n");
+          console.log('test', cleanedData[0].split(','));
+          keys = cleanedData[0].split(',').map((item) => addDay(new Date(item.trim())).toLocaleString("en-us", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+          }));   
+          values = cleanedData[1].split(',').map((item) => !item? 0 : parseInt(item));
+          console.log('keys', keys);
+          console.log('values', values);
+          getGraphType();
+      }
+    }   
+
+    function addDay(date) {
+        var result = new Date(date);
+        result.setDate(result.getDate() + 1);
+        return result;
+    }
+
+    function onPrev() {
+        if (filterOption === 'year') {
+            let currentYear = document.getElementById("year").value;
+            document.getElementById("year").value = currentYear - 1 <= 2022? 2022: currentYear - 1;
+            getYear();
+        } else if (filterOption === 'monthAndYear') {
+            let currentMonth = document.getElementById("month").value;
+            let prevMonth = parseInt(currentMonth) - 1;
+            document.getElementById("month").value = prevMonth <= 0? 0: prevMonth;
+            getMonthAndYear();
+        }
+    }
+
+    function onNext() {
+        if (filterOption === 'year') {
+            let currentYear = document.getElementById("year").value;
+            document.getElementById("year").value = currentYear + 1 >= 2023? 2023: currentYear + 1;
+            getYear();
+        } else if (filterOption === 'monthAndYear') {
+            let currentMonth = document.getElementById("month").value;
+            let nextMonth = parseInt(currentMonth) + 1;
+            document.getElementById("month").value = nextMonth >= 11? 11: nextMonth;
+            getMonthAndYear();
+        } 
+    }
+
+    function getGraphType() {
+        document.getElementById("main").style.display = "inline";
+        document.getElementById("graphOptions").style.display = 'inline';
+        graphType = document.getElementById("graphType").value;
+        if (graphType === 'bar') {
+            document.getElementById("scatterFilter").style.display = 'none';
+            graphMode = '';
+        } else {
+            document.getElementById("scatterFilter").style.display = 'inline';
+            graphMode = document.getElementById("scatter").value;
+        }
+        getCumulType();
+    }
+
+    function getCumulType() {
+        cumulType = document.getElementById("cumulType").value;
+        if (cumulType === 'linear') {
+            document.getElementById("typeFilter").style.display = 'inline';
+            document.getElementById("freqFilter").style.display = 'none';
+            document.getElementById("dateInput").style.display = 'none';
+            document.getElementById("movingAvg").style.display = 'none';
+            filterFunction();
+        } else if (cumulType === 'cumul') {
+            document.getElementById("freqFilter").style.display = 'inline';
+            document.getElementById("movingAvg").style.display = 'inline';
+            document.getElementById("typeFilter").style.display = 'none';
+            document.getElementById("yearFilter").style.display = 'none';
+            document.getElementById("monthFilter").style.display = 'none';
+            document.getElementById("prevButton").style.display = 'none';
+            document.getElementById("nextButton").style.display = 'none';
+            document.getElementById("dateInput").style.display = 'none';
+            getCumulData();
+        } else if (cumulType === 'dayOfWeek') {
+            document.getElementById("dateInput").style.display = 'inline';
+            document.getElementById("freqFilter").style.display = 'none';
+            document.getElementById("typeFilter").style.display = 'none';
+            document.getElementById("yearFilter").style.display = 'none';
+            document.getElementById("monthFilter").style.display = 'none';
+            document.getElementById("prevButton").style.display = 'none';
+            document.getElementById("nextButton").style.display = 'none';
+            document.getElementById("movingAvg").style.display = 'none';
+            cumulPerDayOfWeek();
+        }
+    }
+
+    function getCumulData() {
+        let localKeys = [];
+        let localValues = [];
+        let freq = document.getElementById("freq").value;
+        if (freq === 'year') {
+            let years = _.uniq(keys.map((date) => new Date(date).getFullYear()));
+            localKeys = years;
+            let numDataPerYear = years.map((year) => keys.filter((date) => new Date(date).getFullYear() === year).length);
+            
+            let startIndex = 0;
+            for (let i = 0; i < numDataPerYear.length; i++) {
+                let length = numDataPerYear[i];
+                let sum = 0;
+                for (let j = startIndex; j < length + startIndex; j++) {
+                    if (values[j] !== 0 && !!values[j]) {
+                        sum += values[j];   
+                    }
+                }
+                localValues.push(sum);
+                startIndex += length;
+            }
+        } else if (freq === 'month') {
+            let years = _.uniq(keys.map((date) => new Date(date).getFullYear()));
+            let monthsPerYear = years.map((year) => _.uniq(keys.filter((date) => new Date(date).getFullYear() === year).map(
+                (v) => new Date(v).getMonth() + 1))
+            );
+
+            let numDataPerKey = [];
+
+            for (let i = 0; i < years.length; i++) {
+                for (let j = 0; j < monthsPerYear[i].length; j++) {
+                    let key = monthsPerYear[i][j] + '-' + years[i];
+                    localKeys.push(key);
+
+                    let data = keys.filter((key) => new Date(key).getFullYear() === years[i] 
+                    && new Date(key).getMonth() === monthsPerYear[i][j] - 1).length;
+
+                    numDataPerKey.push(data);
+                }
+            }
+
+            let startIndex = 0;
+            for (let i = 0; i < numDataPerKey.length; i++) {
+                let length = numDataPerKey[i];
+                let sum = 0;
+                for (let j = startIndex; j < length + startIndex; j++) {
+                    if (values[j] !== 0 && !!values[j]) {
+                        sum += values[j];   
+                    }
+                }
+                localValues.push(sum);
+                startIndex += length;
+            }
+        } else {
+            let weeks = keys.filter((date) => new Date(date).getDay() === new Date(keys[0]).getDay());
+            localKeys = weeks;
+
+            let numDataPerWeek = [];
+            for (let i = 0; i < weeks.length; i++) {
+                let week = new Date(weeks[i]);
+                let sum = 0;
+
+                if (i != weeks.length - 1) {
+                    let nextWeek = new Date(weeks[i + 1]);
+                    for (let j = 0; j < keys.length; j++) {
+                        let currentDate = new Date(keys[j]);
+                        if (currentDate >= week && currentDate < nextWeek) {
+                            sum += 1;
+                        }
+                    }
+                } else {
+                    for (let j = 0; j < keys.length; j++) {
+                        let currentDate = new Date(keys[j]);
+                        if (currentDate >= week) {
+                            sum += 1;
+                        }
+                    }
+                }
+                numDataPerWeek.push(sum);  
+            }
+            
+            let startIndex = 0;
+            for (let i = 0; i < numDataPerWeek.length; i++) {
+                let length = numDataPerWeek[i];
+                let sum = 0;
+                for (let j = startIndex; j < length + startIndex; j++) {
+                    if (values[j] !== 0 && !!values[j]) {
+                        sum += values[j];   
+                    }
+                }
+                localValues.push(sum);
+                startIndex += length;
+            }
+        }
+        graphData(localKeys, localValues);
+    }
+
+    function cumulPerDayOfWeek() {
+        let localKeys = [];
+        let localValues = [];
+        let startDate, endDate;
+        let startDateInput = document.getElementById("startDate").value;
+        let endDateInput = document.getElementById("endDate").value;
+        if (startDateInput === '') {
+            startDate = new Date(keys[0]);
+        } else {
+            startDate = addDay(startDateInput);
+        }
+
+        if (endDateInput === '') {
+            endDate = addDay(keys[keys.length - 1]);
+        } else {
+            endDate = new Date(endDateInput);
+        }
+
+        let days = _.uniq(keys.map((date) => new Date(date).getDay())).sort();
+        
+        for (let i = 0; i < days.length; i++) {
+            days[i] = mapNumberToDay(days[i]);
+            localValues.push(0);
+        }
+
+        localKeys = days;
+
+        for (let j = 0; j < keys.length; j++) {
+            let currentDate = new Date(keys[j]);
+            if (currentDate >= startDate && currentDate < endDate) {
+                let index = currentDate.getDay();
+                let value = values[j];
+                localValues[index] += value || 0;
+            }
+        }
+        graphData(localKeys, localValues);
+    }
+
+    function mapNumberToDay(number) {
+        if (number === 0) {
+            return 'Sunday';
+        } 
+        if (number === 1) {
+            return 'Monday';
+        } 
+        if (number === 2) {
+            return 'Tuesday';
+        } 
+        if (number === 3) {
+            return 'Wednesday';
+        } 
+        if (number === 4) {
+            return 'Thursday';
+        } 
+        if (number === 5) {
+            return 'Friday';
+        } 
+        if (number === 6) {
+            return 'Saturday';
+        } 
+    }
+
+    function filterFunction() {
+        filterOption = document.getElementById("filter").value;
+        if (filterOption === 'all') {
+            document.getElementById("yearFilter").style.display = 'none';
+            document.getElementById("monthFilter").style.display = 'none';
+            document.getElementById("prevButton").style.display = 'none';
+            document.getElementById("nextButton").style.display = 'none';
+            graphData(keys, values);
+        } else if (filterOption === 'year') {
+            document.getElementById("prevButton").style.display = 'inline';
+            document.getElementById("nextButton").style.display = 'inline';
+            document.getElementById("yearFilter").style.display = 'inline';
+            document.getElementById("monthFilter").style.display = 'none';
+            getYear();
+        } else {
+            document.getElementById("prevButton").style.display = 'inline';
+            document.getElementById("nextButton").style.display = 'inline';
+            document.getElementById("yearFilter").style.display = 'inline';
+            document.getElementById("monthFilter").style.display = 'inline';
+            getMonthAndYear();
+        }
+    }
+
+    function getYear() {
+        let localKeys = [];
+        let localValues = [];
+        let year = parseInt(document.getElementById("year").value);
+
+        for (let i = 0; i < keys.length; i++) {
+            if (new Date(keys[i]).getFullYear() === year) {
+                localKeys.push(keys[i]);
+                localValues.push(values[i]);
+            }
+        }
+        graphData(localKeys, localValues);
+    }
+
+    function getMonthAndYear() {
+        let localKeys = [];
+        let localValues = [];
+        let month = parseInt(document.getElementById("month").value);
+        let year = parseInt(document.getElementById("year").value);
+
+        for (let i = 0; i < keys.length; i++) {
+            let date = new Date(keys[i]);
+            if (date.getMonth() === month && date.getFullYear() === year) {
+                localKeys.push(keys[i]);
+                localValues.push(values[i]);
+            }
+        }
+        graphData(localKeys, localValues);
+    }
+
+    function graphData(xValues, yValues) {
+        let movingAverage = [];
+        let calc;
+        if (document.getElementById("cumulType").value === 'linear' || document.getElementById("cumulType").value === 'dayOfWeek') {
+            calc = getSum(yValues);
+        } else if (document.getElementById("cumulType").value === 'cumul') {
+          if (checkboxValue === 'true') {
+            movingAverage = getMovingAverage(yValues);
+          }  
+          calc = getAverage(yValues);
+        }
+        
+        var trace = {x: xValues, y: yValues, type: graphType, mode: graphMode, showlegend: false, hovertemplate: '%{x}<br>Value: %{y}<extra></extra>',
+        marker: {
+          color: '#0189a1',
+          opacity: 0.85
+        }};
+        var trace2 = {x: xValues, y: movingAverage, type: 'scatter', mode: 'markers+lines', showlegend: false, hovertemplate: '%{x}<br>Value: %{y}<extra></extra>',
+        marker: {
+          color: '#485664',
+          opacity: 0.8
+        }};
+
+        var tickValues = getIntegerRange(yValues);
+       
+        
+        if (document.getElementById("cumulType").value === 'cumul' && document.getElementById("freq").value === "year") {
+          var tickValuesX = getXAxisValues(xValues);
+          var layout = {
+            title: {
+              text: 'From ' + xValues[0] + ' to ' + xValues[xValues.length - 1] + '<br><br>' + calc,
+              font: {
+                family: 'Poppins, sans-serif',
+                size: 20,
+                color: '#485664'
+              }
+            },
+            xaxis: {tickangle: 45, tickvals: tickValuesX},
+            yaxis: {title: 'Frequency', tickvals: tickValues}
+          };
+        } else {
+          var layout = {
+            title: {
+              text: 'From ' + xValues[0] + ' to ' + xValues[xValues.length - 1] + '<br><br>' + calc,
+              font: {
+                family: 'Poppins, sans-serif',
+                size: 20,
+                color: '#485664'
+              }
+            },
+            xaxis: {
+              tickangle: 45
+            },
+            yaxis: {
+              title: 'Frequency', 
+              tickvals: tickValues
+            }
+          };
+        }
+        
+
+        Plotly.newPlot('graph', [trace, trace2], layout);
+    }   
+
+    function getXAxisValues(xvalues) {
+
+      let intValues = [];
+      let index = 0;
+      while (index <= Math.max(...xvalues)) {
+          intValues.push(index);
+          index++;
+      }
+      return intValues;
+      
+    }
+
+    function getIntegerRange(yvalues) {
+      let intValues = [];
+      let index = 0;
+      if (document.getElementById("cumulType").value === 'cumul' && document.getElementById("freq").value === "year"){
+        while (index <= Math.max(...yvalues)) {
+          if (index % 10 === 0) {
+            intValues.push(index);
+          }
+          index++;
+        }
+      } else if (document.getElementById("cumulType").value === 'cumul' && document.getElementById("freq").value === "month" || document.getElementById("cumulType").value === 'dayOfWeek') {
+        while (index <= Math.max(...yvalues)) {
+          if (index % 5 === 0) {
+            intValues.push(index);
+          }
+          index++;
+        }
+      } else {
+        while (index <= Math.max(...yvalues)) {
+          intValues.push(index);
+          index++;
+        }
+      }
+      return intValues;
+    }
+
+    function getSum(yValues) {
+        if (!yValues.length) {
+            sum = 0;
+        } else {
+            sum = yValues.reduce((a, b) => {
+                a = a || 0;
+                b = b || 0;
+                return a + b;
+            });
+        }
+        return 'Sum: ' + sum;
+    }
+
+    function getAverage(yValues) {
+        if (!yValues.length) {
+            avg = 0;
+        } else {
+            avg = parseInt(yValues.reduce((a, b) => {
+                a = a || 0;
+                b = b || 0;
+                return a + b;
+            })/yValues.length);
+        }
+        return 'Avg: ' + avg;
+    }
+
+    function getMovingAverage(yValues) {
+        const res = [];
+        let sum = 0;
+        let count = 0;
+        for(let i = 0; i < yValues.length; i++){
+            const element = yValues[i];
+            sum += element;
+            count++;
+            const curr = sum / count;
+            res[i] = curr;
+        };
+        return res;
+    }
+</script>
+
+</body>
+</html>
